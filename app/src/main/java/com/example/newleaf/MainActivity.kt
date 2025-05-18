@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -46,13 +45,41 @@ class MainActivity : ComponentActivity() {
             var diseaseImage by remember { mutableStateOf("") }
             var diseaseDescription by remember { mutableStateOf("") }
 
+            // NEW: Launcher for picking image from gallery
             val pickImageLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
             ) { uri ->
                 imageUri = uri
             }
 
-            NewLeafTheme{
+            // NEW: Launcher for capturing image from camera
+            val cameraLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.TakePicturePreview()
+            ) { bitmap: Bitmap? ->
+                if (bitmap != null) {
+                    // Save Bitmap to a temporary URI if needed (optional)
+                    // For now, handle directly
+                    try {
+                        // Perform prediction
+                        resultText = "Prediction pending..."
+                        val prediction = tfliteModel.classifyImage(bitmap)
+
+                        resultText = "Prediction complete!"
+                        diseaseName = if (prediction.isHealthy) {
+                            "${prediction.plantType}___healthy"
+                        } else {
+                            "${prediction.plantType}___${prediction.diseaseType}"
+                        }
+                        diseaseImage = "image_url"
+                        diseaseDescription = "Confidence: ${(prediction.confidence * 100).toInt()}%"
+                        imageUri = null // Camera images don't have URI
+                    } catch (e: Exception) {
+                        resultText = "Error: ${e.message}"
+                    }
+                }
+            }
+
+            NewLeafTheme {
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -74,12 +101,10 @@ class MainActivity : ComponentActivity() {
                             ),
                             navigationIcon = {
                                 if (currentRoute != "home") {
-
                                     IconButton(onClick = { navController.navigateUp() }) {
                                         Icon(Icons.Default.ArrowBack, "Back")
                                     }
-
-                                } else null
+                                }
                             }
                         )
                     },
@@ -96,25 +121,25 @@ class MainActivity : ComponentActivity() {
                             LeafDiseaseDetectionScreen(
                                 imageUri = imageUri,
                                 onPickImage = { pickImageLauncher.launch("image/*") },
+                                onCaptureImage = { cameraLauncher.launch(null) },
                                 onDetectDisease = {
                                     resultText = "Prediction pending..."
                                     try {
-                                        // Convert URI to Bitmap
-                                        val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri!!)
+                                        val inputStream: InputStream? =
+                                            context.contentResolver.openInputStream(imageUri!!)
                                         val bitmap = BitmapFactory.decodeStream(inputStream)
-                                        
-                                        // Perform prediction
+
                                         val prediction = tfliteModel.classifyImage(bitmap)
-                                        
-                                        // Update UI with results
+
                                         resultText = "Prediction complete!"
                                         diseaseName = if (prediction.isHealthy) {
-                                            "${prediction.plantType} is healthy"
+                                            "${prediction.plantType}___healthy"
                                         } else {
-                                            "${prediction.plantType} - ${prediction.diseaseType}"
+                                            "${prediction.plantType}___${prediction.diseaseType}"
                                         }
-                                        diseaseImage = "image_url" // You can add specific images for each disease
-                                        diseaseDescription = "Confidence: ${(prediction.confidence * 100).toInt()}%"
+                                        diseaseImage = "image_url"
+                                        diseaseDescription =
+                                            "Confidence: ${(prediction.confidence * 100).toInt()}%"
                                     } catch (e: Exception) {
                                         resultText = "Error: ${e.message}"
                                     }
@@ -122,11 +147,12 @@ class MainActivity : ComponentActivity() {
                                 resultText = resultText,
                                 diseaseName = diseaseName,
                                 diseaseImage = diseaseImage,
-                                diseaseDescription = diseaseDescription
+                                diseaseDescription = diseaseDescription,
+                                navController = navController
                             )
                         }
                         composable("treatment") {
-                            TreatmentScreen(diseaseName = diseaseName)
+                            TreatmentScreen(diseaseName = diseaseName.replace(" ", "_"))
                         }
                         composable("diseaseInfo") {
                             DiseaseInfoScreen()
@@ -172,6 +198,5 @@ fun BottomNavigationBar(navController: NavController, currentRoute: String?) {
         )
     }
 }
-
 
 

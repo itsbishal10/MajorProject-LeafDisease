@@ -72,6 +72,10 @@ dependencies {
 // For multipart file upload
     implementation ("com.squareup.okhttp3:okhttp-urlconnection:4.9.3")
 
+    //extended
+    implementation("androidx.compose.material:material-icons-extended")
+
+
     implementation ("com.google.code.gson:gson:2.9.0")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -83,6 +87,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("org.tensorflow:tensorflow-lite-support:0.1.0")
     implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0")
+    implementation("androidx.camera:camera-core:1.4.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
