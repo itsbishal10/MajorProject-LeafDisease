@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -92,17 +93,18 @@ class MainActivity : ComponentActivity() {
                                         "datasetInfo" -> "Dataset Information"
                                         else -> "Leaf Disease Detector"
                                     },
-                                    style = MaterialTheme.typography.titleLarge
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = Color.White
                                 )
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                titleContentColor = Color.White
                             ),
                             navigationIcon = {
                                 if (currentRoute != "home") {
                                     IconButton(onClick = { navController.navigateUp() }) {
-                                        Icon(Icons.Default.ArrowBack, "Back")
+                                        Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
                                     }
                                 }
                             }
