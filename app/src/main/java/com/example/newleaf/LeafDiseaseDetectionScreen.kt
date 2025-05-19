@@ -2,7 +2,10 @@ package com.example.newleaf
 
 import android.net.Uri
 import androidx.camera.core.Camera
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,18 +15,22 @@ import androidx.compose.material.icons.Icons
 //import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavController
 
 @Composable
@@ -40,9 +47,30 @@ fun LeafDiseaseDetectionScreen(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val infiniteTransition = rememberInfiniteTransition()
+    
+    // Loading animation for buttons
+    val buttonScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    
+    // Background gradient
+    val gradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.background,
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+        )
+    )
     
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(brush = gradient)
     ) {
         // App Introduction Section
         Column(
@@ -75,15 +103,15 @@ fun LeafDiseaseDetectionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Image preview
-            if (imageUri != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .shadow(8.dp),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
+            // Image preview or placeholder
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .shadow(8.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                if (imageUri != null) {
                     Image(
                         painter = rememberAsyncImagePainter(imageUri),
                         contentDescription = "Selected Leaf",
@@ -92,15 +120,69 @@ fun LeafDiseaseDetectionScreen(
                             .clip(RoundedCornerShape(16.dp)),
                         contentScale = ContentScale.Crop
                     )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                        shape = RoundedCornerShape(60.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Photo,
+                                    contentDescription = "Placeholder",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "No Image Selected",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Select an image from gallery or capture a new photo",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
 
-            // Main Action Button
+            // Main Action Button with animation
             Button(
                 onClick = onPickImage,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(56.dp)
+                    .graphicsLayer {
+                        scaleX = buttonScale
+                        scaleY = buttonScale
+                    },
                 shape = RoundedCornerShape(28.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
@@ -118,14 +200,19 @@ fun LeafDiseaseDetectionScreen(
                 )
             }
 
-            // Secondary Actions
+            // Secondary Actions with animations
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 OutlinedButton(
                     onClick = onCaptureImage,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .graphicsLayer {
+                            scaleX = buttonScale
+                            scaleY = buttonScale
+                        }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Camera,
@@ -140,66 +227,84 @@ fun LeafDiseaseDetectionScreen(
                 OutlinedButton(
                     onClick = onDetectDisease,
                     enabled = imageUri != null,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .graphicsLayer {
+                            scaleX = if (imageUri != null) buttonScale else 1f
+                            scaleY = if (imageUri != null) buttonScale else 1f
+                        }
                 ) {
                     Text("Detect Disease")
                 }
             }
 
-            // Result Section
-            if (resultText == "Prediction pending...") {
-                CircularProgressIndicator()
-            } else if (resultText.isNotEmpty()) {
-                Card(
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+            // Result Section with animation
+            AnimatedVisibility(
+                visible = resultText.isNotEmpty(),
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                if (resultText == "Prediction pending...") {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = diseaseName,
-                            style = MaterialTheme.typography.titleLarge,
-                            textAlign = TextAlign.Center
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        if (diseaseImage.isNotEmpty()) {
-                            Image(
-                                painter = rememberAsyncImagePainter(diseaseImage),
-                                contentDescription = "Disease Image",
-                                modifier = Modifier
-                                    .height(200.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
-                                contentScale = ContentScale.Crop
+                    }
+                } else {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = diseaseName,
+                                style = MaterialTheme.typography.titleLarge,
+                                textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                        }
 
-                        Text(
-                            text = diseaseDescription,
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
+                            if (diseaseImage.isNotEmpty()) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(diseaseImage),
+                                    contentDescription = "Disease Image",
+                                    modifier = Modifier
+                                        .height(200.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
 
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = {
-                                navController.navigate("treatment")
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("View Treatment Guide")
+                            Text(
+                                text = diseaseDescription,
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = {
+                                    navController.navigate("treatment")
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("View Treatment Guide")
+                            }
                         }
                     }
                 }
             }
             
-            // Add some bottom padding for better scrolling experience
             Spacer(modifier = Modifier.height(24.dp))
         }
     }

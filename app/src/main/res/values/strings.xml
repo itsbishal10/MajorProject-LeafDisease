@@ -1,3 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">newLeaf</string>
+    <string name="app_name">LEAFGUARD</string>
+    <string name="detect_disease">Detect Plant Disease</string>
+    <string name="detect_disease_description">Take a photo of your plant to detect diseases</string>
+    <string name="how_to_use">How to Use</string>
+    <string name="how_to_use_description">Learn how to use the app effectively</string>
+    <string name="quick_tips">Quick Tips</string>
+    <string name="quick_tips_description">Get instant plant care advice</string>
+    <string name="weather">Weather</string>
+    <string name="weather_description">Check local weather conditions</string>
 </resources>
