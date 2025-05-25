@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -28,6 +29,39 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.newleaf.ui.theme.NewLeafTheme
 import java.io.InputStream
+import android.content.ContentValues
+import android.os.Build
+import android.provider.MediaStore
+import java.io.OutputStream
+import java.io.File
+import java.io.FileOutputStream
+
+fun Bitmap.toUri(context: android.content.Context): Uri {
+    val filename = "leaf_image_${System.currentTimeMillis()}.jpg"
+    var uri: Uri? = null
+    
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/NewLeaf")
+        }
+        
+        uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        uri?.let { context.contentResolver.openOutputStream(it) }?.use { stream ->
+            compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        }
+    } else {
+        val imagesDir = context.getExternalFilesDir("Pictures/NewLeaf")
+        val image = File(imagesDir, filename)
+        FileOutputStream(image).use { stream ->
+            compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        }
+        uri = Uri.fromFile(image)
+    }
+    
+    return uri ?: throw IllegalStateException("Failed to create URI for bitmap")
+}
 
 class MainActivity : ComponentActivity() {
     private lateinit var tfliteModel: TFLiteModel
@@ -35,6 +69,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
         tfliteModel = TFLiteModel(this)
 
         setContent {
@@ -64,22 +99,9 @@ class MainActivity : ComponentActivity() {
                     contract = ActivityResultContracts.TakePicturePreview()
                 ) { bitmap: Bitmap? ->
                     if (bitmap != null) {
-                        try {
-                            resultText = "Prediction pending..."
-                            val prediction = tfliteModel.classifyImage(bitmap)
-
-                            resultText = "Prediction complete!"
-                            diseaseName = if (prediction.isHealthy) {
-                                "${prediction.plantType}___healthy"
-                            } else {
-                                "${prediction.plantType}___${prediction.diseaseType}"
-                            }
-                            diseaseImage = "image_url"
-                            diseaseDescription = "Confidence: ${(prediction.confidence * 100).toInt()}%"
-                            imageUri = null
-                        } catch (e: Exception) {
-                            resultText = "Error: ${e.message}"
-                        }
+                        // Convert bitmap to URI and store it
+                        val uri = bitmap.toUri(context)
+                        imageUri = uri
                     }
                 }
 
@@ -183,7 +205,8 @@ class MainActivity : ComponentActivity() {
                             enterTransition = { fadeIn() + slideInHorizontally() },
                             exitTransition = { fadeOut() + slideOutHorizontally() }
                         ) {
-                            TreatmentScreen(diseaseName = diseaseName.replace(" ", "_"))
+                            Log.d("TreatmentScreen", "Disease name being passed: $diseaseName")
+                            TreatmentScreen(diseaseName = diseaseName)
                         }
                         composable(
                             route = "diseaseInfo",

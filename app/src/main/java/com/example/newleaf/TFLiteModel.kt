@@ -68,6 +68,7 @@ class TFLiteModel(private val context: Context) {
 
         // Get the disease name and plant type
         val diseaseName = diseaseClasses[maxIndex]
+        android.util.Log.d("TFLiteModel", "Detected disease name: $diseaseName")
         val (plantType, diseaseType) = parseDiseaseName(diseaseName)
 
         return PredictionResult(

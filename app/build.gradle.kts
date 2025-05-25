@@ -53,30 +53,19 @@ android {
 dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("org.tensorflow:tensorflow-lite:2.14.0")
-
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
-    implementation ("androidx.compose.material3:material3:1.0.0")
+    implementation("androidx.compose.material3:material3:1.0.0")
+    
     // Retrofit for networking
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-
-// Gson converter for JSON
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-
-// OkHttp for HTTP client
-    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
-
-// Logging interceptor (optional but useful for debugging)
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
-
-// For multipart file upload
-    implementation ("com.squareup.okhttp3:okhttp-urlconnection:4.9.3")
-
-    //extended
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.3")
+    
+    // Other existing dependencies
     implementation("androidx.compose.material:material-icons-extended")
-
-
-    implementation ("com.google.code.gson:gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.9.0")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.9.0")
@@ -88,6 +77,8 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-support:0.1.0")
     implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0")
     implementation("androidx.camera:camera-core:1.4.2")
+    
+    // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

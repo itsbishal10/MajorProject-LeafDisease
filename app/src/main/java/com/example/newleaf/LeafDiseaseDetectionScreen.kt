@@ -31,7 +31,13 @@ import coil.compose.rememberAsyncImagePainter
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.navigation.NavController
+import com.example.newleaf.data.Detection
+//import com.example.newleaf.data.FirebaseRepository
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 @Composable
 fun LeafDiseaseDetectionScreen(
@@ -44,10 +50,14 @@ fun LeafDiseaseDetectionScreen(
     diseaseImage: String,
     diseaseDescription: String,
     navController: NavController,
-    modifier: Modifier = Modifier
+//    firebaseRepository: FirebaseRepository
 ) {
     val scrollState = rememberScrollState()
     val infiniteTransition = rememberInfiniteTransition()
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     
     // Loading animation for buttons
     val buttonScale by infiniteTransition.animateFloat(
@@ -68,7 +78,7 @@ fun LeafDiseaseDetectionScreen(
     )
     
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(brush = gradient)
     ) {
@@ -234,7 +244,7 @@ fun LeafDiseaseDetectionScreen(
                             scaleY = if (imageUri != null) buttonScale else 1f
                         }
                 ) {
-                    Text("Detect Disease")
+                    Text("Detect")
                 }
             }
 
@@ -294,15 +304,32 @@ fun LeafDiseaseDetectionScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
                                 onClick = {
-                                    navController.navigate("treatment")
+                                    if (diseaseName.isNotEmpty()) {
+                                        navController.navigate("treatment")
+                                    }
                                 },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                enabled = diseaseName.isNotEmpty(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White
+                                )
                             ) {
-                                Text("View Treatment Guide")
+                                Text("Get Solution")
                             }
                         }
                     }
                 }
+            }
+            
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
             
             Spacer(modifier = Modifier.height(24.dp))

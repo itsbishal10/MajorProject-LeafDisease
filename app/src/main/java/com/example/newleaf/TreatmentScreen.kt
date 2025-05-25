@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import android.util.Log
 
 data class TreatmentInfo(
     val plantName: String,
@@ -102,6 +103,8 @@ fun TreatmentScreen(diseaseName: String) {
 private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
     // Clean up the disease name by replacing underscores with spaces for display
     val displayName = diseaseName.replace("_", " ")
+    Log.d("TreatmentScreen", "Processing disease name: $diseaseName")
+    Log.d("TreatmentScreen", "Display name: $displayName")
     
     return when (diseaseName) {
         "Apple___Apple_scab" -> TreatmentInfo(
@@ -145,13 +148,21 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
                 "Pest and Disease Monitoring: Regularly inspect for any signs of pests or diseases."
             )
         )
-        "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot" -> TreatmentInfo(
+        "Corn_(maize)___Cercospora_leaf_spot_Gray_leaf_spot" -> TreatmentInfo(
             plantName = "Corn (Maize)",
             diseaseName = "Cercospora Leaf Spot / Gray Leaf Spot",
             solutions = listOf(
-                "Fungicides: Apply appropriate fungicides labeled for Cercospora and Gray leaf spot at the recommended growth stages and under favorable weather conditions for disease development."
+                "Fungicides: Apply appropriate fungicides labeled for Cercospora and Gray leaf spot at the recommended growth stages and under favorable weather conditions for disease development.",
+                "Crop Rotation: Practice crop rotation to reduce disease pressure.",
+                "Resistant Varieties: Plant disease-resistant corn varieties when available.",
+                "Field Sanitation: Remove and destroy crop debris after harvest to reduce overwintering inoculum."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Monitor Weather Conditions: Be especially vigilant during periods of high humidity and moderate temperatures.",
+                "Proper Plant Spacing: Ensure adequate spacing between plants for good air circulation.",
+                "Balanced Fertilization: Maintain proper nutrient levels to promote plant health.",
+                "Regular Field Scouting: Monitor fields regularly for early signs of disease development."
+            )
         )
         "Corn_(maize)___Northern_Leaf_Blight" -> TreatmentInfo(
             plantName = "Corn (Maize)",
