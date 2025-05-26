@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.camera.core.Camera
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -38,6 +39,8 @@ import com.example.newleaf.data.Detection
 //import com.example.newleaf.data.FirebaseRepository
 import kotlinx.coroutines.launch
 import java.util.UUID
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 @Composable
 fun LeafDiseaseDetectionScreen(
@@ -58,13 +61,14 @@ fun LeafDiseaseDetectionScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
     
-    // Loading animation for buttons
+    // Enhanced animations
     val buttonScale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.05f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000),
+            animation = tween(1000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
@@ -82,7 +86,7 @@ fun LeafDiseaseDetectionScreen(
             .fillMaxSize()
             .background(brush = gradient)
     ) {
-        // App Introduction Section
+        // App Introduction Section with enhanced typography
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -91,14 +95,19 @@ fun LeafDiseaseDetectionScreen(
         ) {
             Text(
                 text = "Plant Leaf Disease Detector",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = 28.sp,
+                    letterSpacing = 0.5.sp
+                ),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Upload a leaf image to identify diseases and get treatment advice.",
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    letterSpacing = 0.25.sp
+                ),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -113,23 +122,39 @@ fun LeafDiseaseDetectionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Image preview or placeholder
+            // Enhanced Image Preview Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
-                    .shadow(8.dp),
-                shape = RoundedCornerShape(16.dp)
+                    .height(300.dp)
+                    .shadow(12.dp, RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp)
             ) {
                 if (imageUri != null) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUri),
-                        contentDescription = "Selected Leaf",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(16.dp)),
-                        contentScale = ContentScale.Crop
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUri),
+                            contentDescription = "Selected Leaf",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(24.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.3f)
+                                        )
+                                    )
+                                )
+                        )
+                    }
                 } else {
                     Box(
                         modifier = Modifier
@@ -183,72 +208,137 @@ fun LeafDiseaseDetectionScreen(
                 }
             }
 
-            // Main Action Button with animation
+            // Enhanced Main Action Button
             Button(
-                onClick = onPickImage,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onPickImage()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(60.dp)
                     .graphicsLayer {
                         scaleX = buttonScale
                         scaleY = buttonScale
                     },
-                shape = RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 6.dp,
+                    pressedElevation = 2.dp
                 )
             ) {
-                Icon(
-                    imageVector = Icons.Default.PhotoLibrary,
-                    contentDescription = "Select Image",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Select Leaf Image",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PhotoLibrary,
+                        contentDescription = "Select Image",
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Select Leaf Image",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 18.sp
+                        )
+                    )
+                }
             }
 
-            // Secondary Actions with animations
+            // Enhanced Secondary Actions
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 OutlinedButton(
-                    onClick = onCaptureImage,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onCaptureImage()
+                    },
                     modifier = Modifier
                         .weight(1f)
+                        .height(56.dp)
                         .graphicsLayer {
                             scaleX = buttonScale
                             scaleY = buttonScale
-                        }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Camera,
-                        contentDescription = "Camera"
+                        },
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            )
+                        )
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Camera")
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Camera,
+                            contentDescription = "Camera",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Camera",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 }
                 
                 Spacer(modifier = Modifier.width(16.dp))
                 
                 OutlinedButton(
-                    onClick = onDetectDisease,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onDetectDisease()
+                    },
                     enabled = imageUri != null,
                     modifier = Modifier
                         .weight(1f)
+                        .height(56.dp)
                         .graphicsLayer {
                             scaleX = if (imageUri != null) buttonScale else 1f
                             scaleY = if (imageUri != null) buttonScale else 1f
-                        }
+                        },
+                    shape = RoundedCornerShape(28.dp),
+                    border = BorderStroke(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            )
+                        )
+                    )
                 ) {
-                    Text("Detect")
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Detect",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Detect",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 }
             }
 
-            // Result Section with animation
+            // Enhanced Result Section
             AnimatedVisibility(
                 visible = resultText.isNotEmpty(),
                 enter = fadeIn() + expandVertically(),
@@ -261,63 +351,85 @@ fun LeafDiseaseDetectionScreen(
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(48.dp),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 4.dp
                         )
                     }
                 } else {
                     Card(
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateContentSize(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 8.dp
                         )
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
                                 text = diseaseName,
-                                style = MaterialTheme.typography.titleLarge,
-                                textAlign = TextAlign.Center
+                                style = MaterialTheme.typography.headlineSmall,
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
                             if (diseaseImage.isNotEmpty()) {
                                 Image(
                                     painter = rememberAsyncImagePainter(diseaseImage),
                                     contentDescription = "Disease Image",
                                     modifier = Modifier
                                         .height(200.dp)
-                                        .clip(RoundedCornerShape(8.dp)),
+                                        .clip(RoundedCornerShape(16.dp)),
                                     contentScale = ContentScale.Crop
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
-
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
                             Text(
                                 text = diseaseDescription,
                                 style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-
-                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Spacer(modifier = Modifier.height(24.dp))
+                            
                             Button(
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     if (diseaseName.isNotEmpty()) {
                                         navController.navigate("treatment")
                                     }
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                enabled = diseaseName.isNotEmpty(),
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(28.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = Color.White
-                                )
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                enabled = diseaseName.isNotEmpty()
                             ) {
-                                Text("Get Solution")
+                                Row(
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocalHospital,
+                                        contentDescription = "Treatment"
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("View Treatment")
+                                }
                             }
                         }
                     }
@@ -325,11 +437,32 @@ fun LeafDiseaseDetectionScreen(
             }
             
             errorMessage?.let {
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Error,
+                            contentDescription = "Error",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.height(24.dp))

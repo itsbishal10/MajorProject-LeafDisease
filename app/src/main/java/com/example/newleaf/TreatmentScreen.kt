@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import android.util.Log
 
 data class TreatmentInfo(
     val plantName: String,
@@ -103,8 +102,6 @@ fun TreatmentScreen(diseaseName: String) {
 private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
     // Clean up the disease name by replacing underscores with spaces for display
     val displayName = diseaseName.replace("_", " ")
-    Log.d("TreatmentScreen", "Processing disease name: $diseaseName")
-    Log.d("TreatmentScreen", "Display name: $displayName")
     
     return when (diseaseName) {
         "Apple___Apple_scab" -> TreatmentInfo(
@@ -115,7 +112,12 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
                 "Pruning: Remove heavily infected twigs and leaves.",
                 "Increase Airflow: Ensure good air circulation through pruning."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check trees weekly during the growing season for early signs of scab.",
+                "Sanitation: Remove and destroy fallen leaves and fruit in autumn.",
+                "Proper Pruning: Maintain an open canopy for better air circulation.",
+                "Resistant Varieties: Consider planting scab-resistant apple varieties in new plantings."
+            )
         )
         "Apple___healthy" -> TreatmentInfo(
             plantName = "Apple",
@@ -133,9 +135,15 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             diseaseName = "Powdery Mildew",
             solutions = listOf(
                 "Fungicides: Apply appropriate fungicides labeled for powdery mildew on cherries. Follow product instructions carefully.",
-                "Pruning: Remove heavily infected shoots and leaves."
+                "Pruning: Remove heavily infected shoots and leaves.",
+                "Sulfur Sprays: Apply sulfur-based fungicides early in the season as a preventive measure."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check trees weekly for early signs of powdery mildew.",
+                "Proper Spacing: Ensure adequate spacing between trees for good air circulation.",
+                "Pruning: Maintain an open canopy through proper pruning.",
+                "Resistant Varieties: Consider planting powdery mildew-resistant varieties in new plantings."
+            )
         )
         "Cherry_(including_sour)___healthy" -> TreatmentInfo(
             plantName = "Cherry",
@@ -148,29 +156,37 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
                 "Pest and Disease Monitoring: Regularly inspect for any signs of pests or diseases."
             )
         )
-        "Corn_(maize)___Cercospora_leaf_spot_Gray_leaf_spot" -> TreatmentInfo(
+        "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot" -> TreatmentInfo(
             plantName = "Corn (Maize)",
             diseaseName = "Cercospora Leaf Spot / Gray Leaf Spot",
             solutions = listOf(
                 "Fungicides: Apply appropriate fungicides labeled for Cercospora and Gray leaf spot at the recommended growth stages and under favorable weather conditions for disease development.",
                 "Crop Rotation: Practice crop rotation to reduce disease pressure.",
                 "Resistant Varieties: Plant disease-resistant corn varieties when available.",
-                "Field Sanitation: Remove and destroy crop debris after harvest to reduce overwintering inoculum."
+                "Field Sanitation: Remove and destroy crop debris after harvest."
             ),
             maintenance = listOf(
-                "Monitor Weather Conditions: Be especially vigilant during periods of high humidity and moderate temperatures.",
-                "Proper Plant Spacing: Ensure adequate spacing between plants for good air circulation.",
-                "Balanced Fertilization: Maintain proper nutrient levels to promote plant health.",
-                "Regular Field Scouting: Monitor fields regularly for early signs of disease development."
+                "Monitor Fields: Regularly scout fields for early signs of disease.",
+                "Proper Spacing: Ensure adequate plant spacing for good air circulation.",
+                "Fertility Management: Maintain balanced soil fertility.",
+                "Irrigation Management: Avoid overhead irrigation if possible."
             )
         )
         "Corn_(maize)___Northern_Leaf_Blight" -> TreatmentInfo(
             plantName = "Corn (Maize)",
             diseaseName = "Northern Leaf Blight",
             solutions = listOf(
-                "Fungicides: Apply fungicides effective against Northern Leaf Blight at the appropriate growth stages, particularly during early disease development."
+                "Fungicides: Apply fungicides effective against Northern Leaf Blight at the appropriate growth stages, particularly during early disease development.",
+                "Crop Rotation: Implement a 2-3 year rotation with non-host crops.",
+                "Resistant Varieties: Plant corn varieties with resistance to Northern Leaf Blight.",
+                "Field Sanitation: Remove and destroy infected crop debris after harvest."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Scouting: Monitor fields weekly for early disease symptoms.",
+                "Proper Plant Spacing: Ensure adequate spacing for good air circulation.",
+                "Fertility Management: Maintain balanced soil fertility.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation when possible."
+            )
         )
         "Corn_(maize)___healthy" -> TreatmentInfo(
             plantName = "Corn (Maize)",
@@ -189,17 +205,31 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             solutions = listOf(
                 "There is no effective cure for Esca once symptoms appear. Focus on preventing further spread.",
                 "Remove and Destroy Infected Vines: Severely infected vines should be removed and burned.",
-                "Improve Vineyard Management: Focus on practices that promote vine vigor and reduce stress."
+                "Improve Vineyard Management: Focus on practices that promote vine vigor and reduce stress.",
+                "Fungicide Applications: Apply preventive fungicides during the growing season."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Inspect vines regularly for early symptoms.",
+                "Proper Pruning: Use proper pruning techniques and avoid large pruning wounds.",
+                "Vineyard Sanitation: Remove and destroy infected plant material.",
+                "Stress Management: Implement practices that reduce vine stress, such as proper irrigation and nutrition."
+            )
         )
         "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)" -> TreatmentInfo(
             plantName = "Grape",
             diseaseName = "Leaf Blight (Isariopsis Leaf Spot)",
             solutions = listOf(
-                "Fungicides: Apply appropriate fungicides labeled for Isariopsis Leaf Spot according to recommended schedules."
+                "Fungicides: Apply appropriate fungicides labeled for Isariopsis Leaf Spot according to recommended schedules.",
+                "Pruning: Remove and destroy infected leaves and canes.",
+                "Improve Air Circulation: Prune to maintain an open canopy.",
+                "Sanitation: Remove and destroy fallen leaves and debris."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check vines weekly for early symptoms.",
+                "Proper Training: Train vines to maintain good air circulation.",
+                "Fertility Management: Maintain balanced nutrition to promote healthy growth.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation when possible."
+            )
         )
         "Grape___healthy" -> TreatmentInfo(
             plantName = "Grape",
@@ -217,9 +247,16 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             diseaseName = "Bacterial Spot",
             solutions = listOf(
                 "Copper-based Sprays: Continue copper applications during the growing season, following label restrictions and considering potential phytotoxicity.",
-                "Pruning: Remove severely infected twigs."
+                "Pruning: Remove severely infected twigs.",
+                "Antibiotic Sprays: Apply streptomycin or oxytetracycline sprays during bloom.",
+                "Sanitation: Remove and destroy infected plant material."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check trees weekly for early symptoms.",
+                "Proper Pruning: Maintain an open canopy for good air circulation.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation.",
+                "Fertility Management: Avoid excessive nitrogen fertilization."
+            )
         )
         "Peach___healthy" -> TreatmentInfo(
             plantName = "Peach",
@@ -237,9 +274,16 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             diseaseName = "Bacterial Spot",
             solutions = listOf(
                 "Copper-based Sprays: Apply copper-based fungicides, although their effectiveness may be limited once the disease is established.",
-                "Remove Infected Plants: Promptly remove and destroy infected plants to prevent further spread."
+                "Remove Infected Plants: Promptly remove and destroy infected plants to prevent further spread.",
+                "Antibiotic Sprays: Apply streptomycin or oxytetracycline sprays during early disease development.",
+                "Sanitation: Remove and destroy infected plant material."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check plants weekly for early symptoms.",
+                "Proper Spacing: Ensure adequate plant spacing for good air circulation.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation.",
+                "Fertility Management: Avoid excessive nitrogen fertilization."
+            )
         )
         "Pepper,_bell___healthy" -> TreatmentInfo(
             plantName = "Bell Pepper",
@@ -258,9 +302,15 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             solutions = listOf(
                 "Systemic Fungicides: Apply systemic fungicides labeled for late blight at recommended intervals.",
                 "Hilling: Hill soil around the base of plants to protect tubers.",
-                "Remove Infected Foliage: Remove and destroy infected leaves and stems."
+                "Remove Infected Foliage: Remove and destroy infected leaves and stems.",
+                "Sanitation: Remove and destroy infected plant material."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check plants weekly for early symptoms.",
+                "Proper Spacing: Ensure adequate plant spacing for good air circulation.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation.",
+                "Fertility Management: Maintain balanced soil fertility."
+            )
         )
         "Potato___healthy" -> TreatmentInfo(
             plantName = "Potato",
@@ -277,9 +327,17 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             plantName = "Strawberry",
             diseaseName = "Leaf Scorch",
             solutions = listOf(
-                "Fungicides: Apply appropriate fungicides labeled for leaf scorch."
+                "Fungicides: Apply appropriate fungicides labeled for leaf scorch.",
+                "Pruning: Remove and destroy infected leaves.",
+                "Sanitation: Remove and destroy infected plant material.",
+                "Improve Air Circulation: Maintain proper plant spacing."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check plants weekly for early symptoms.",
+                "Proper Spacing: Ensure adequate plant spacing for good air circulation.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation.",
+                "Fertility Management: Maintain balanced soil fertility."
+            )
         )
         "Strawberry___healthy" -> TreatmentInfo(
             plantName = "Strawberry",
@@ -297,9 +355,16 @@ private fun getTreatmentInfo(diseaseName: String): TreatmentInfo {
             diseaseName = "Late Blight",
             solutions = listOf(
                 "Systemic Fungicides: Apply systemic fungicides labeled for late blight at recommended intervals.",
-                "Prune Infected Foliage: Remove and destroy infected leaves and stems immediately."
+                "Prune Infected Foliage: Remove and destroy infected leaves and stems immediately.",
+                "Sanitation: Remove and destroy infected plant material.",
+                "Improve Air Circulation: Maintain proper plant spacing."
             ),
-            maintenance = emptyList()
+            maintenance = listOf(
+                "Regular Monitoring: Check plants weekly for early symptoms.",
+                "Proper Spacing: Ensure adequate plant spacing for good air circulation.",
+                "Irrigation: Use drip irrigation instead of overhead irrigation.",
+                "Fertility Management: Maintain balanced soil fertility."
+            )
         )
         "Tomato___healthy" -> TreatmentInfo(
             plantName = "Tomato",

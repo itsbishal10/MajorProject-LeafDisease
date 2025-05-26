@@ -205,7 +205,6 @@ class MainActivity : ComponentActivity() {
                             enterTransition = { fadeIn() + slideInHorizontally() },
                             exitTransition = { fadeOut() + slideOutHorizontally() }
                         ) {
-                            Log.d("TreatmentScreen", "Disease name being passed: $diseaseName")
                             TreatmentScreen(diseaseName = diseaseName)
                         }
                         composable(
